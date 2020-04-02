@@ -42,14 +42,18 @@ textarea{
   display: block;
   width: 45px;
   height: 45px;
-  background-color: rgba(255,255,255,0.25);
+  background-color: rgba(255,255,255,0.2);
   border: 2px solid rgba(255,255,255,0);
   border-radius: 4px;
   box-shadow: 0 0 5px rgba(0,0,0,0.5);
-  color: rgb(221, 183, 171);
+  color: rgb(226, 196, 187);
   outline: none;
   margin: 2px;
   cursor: pointer;
+}
+
+.keyboard-key:hover{
+  background-color: rgba(255,255,255,0.4);
 }
 
 .keyboard-key-wide{
@@ -60,7 +64,7 @@ textarea{
   width: 225px;
 }
 
-.keyboard-key-active{
-  background-color: rgba(255,255,255,0.1);
+.keyboard-key-pressed{
+  background-color: rgba(255,255,255,0.4);
 }
 
