@@ -48,7 +48,13 @@ class Keyboard {
       'capslock', 'ф', 'ы', 'в', 'а', 'п', 'р', 'о', 'л', 'д', 'ж', 'э', 'enter',
       'shift', 'я', 'ч', 'с', 'м', 'и', 'т', 'ь', 'б', 'ю', '.', '↑', 'rshift',
       'ctrl', 'win', 'alt', 'whitespace', 'ctrl', 'home', '←', '↓', '→', 'end',
-    ] : [];
+    ] : [
+      '`', '1', '2', '3', '4', '5', '6', '7', '8', '9', '0', '-', '=', 'backspace',
+      'tab', 'q', 'w', 'e', 'r', 't', 'y', 'u', 'i', 'o', 'p', '[', ']', 'delete',
+      'capslock', 'a', 's', 'd', 'f', 'g', 'h', 'j', 'k', 'l', ';', '\'', 'enter',
+      'shift', 'z', 'x', 'c', 'v', 'b', 'n', 'm', ',', '.', '/', '↑', 'rshift',
+      'ctrl', 'win', 'alt', 'whitespace', 'ctrl', 'home', '←', '↓', '→', 'end',
+    ];
 
     keysLayout.forEach(key => {
       const keyElement = document.createElement('button');
@@ -62,7 +68,6 @@ class Keyboard {
         case "backspace":
           keyElement.classList.add('keyboard-key-wide');
           keyElement.innerHTML = 'Backspace';
-
 
           keyElement.addEventListener('click', () => {
             this.elements.textarea.focus();
@@ -87,10 +92,10 @@ class Keyboard {
           keyElement.addEventListener('click', () => {
             this.elements.textarea.focus();
             event.preventDefault();
-            if (this.elements.textarea.selectionEnd === this.elements.textarea.selectionStart) 
-            this.properties.valueInput = this.properties.valueInput.substring(0, this.elements.textarea.selectionStart) + this.properties.valueInput.substring(this.elements.textarea.selectionStart + 1, this.properties.valueInput.length);
+            if (this.elements.textarea.selectionEnd === this.elements.textarea.selectionStart)
+              this.properties.valueInput = this.properties.valueInput.substring(0, this.elements.textarea.selectionStart) + this.properties.valueInput.substring(this.elements.textarea.selectionStart + 1, this.properties.valueInput.length);
             else
-            this.properties.valueInput = this.properties.valueInput.substring(0, this.elements.textarea.selectionStart) + this.properties.valueInput.substring(this.elements.textarea.selectionEnd, this.properties.valueInput.length);
+              this.properties.valueInput = this.properties.valueInput.substring(0, this.elements.textarea.selectionStart) + this.properties.valueInput.substring(this.elements.textarea.selectionEnd, this.properties.valueInput.length);
             this._oninput(key, this.elements.textarea.selectionStart);
           });
           break;
@@ -170,6 +175,18 @@ class Keyboard {
             event.preventDefault();
             this._oninput(key, this.properties.valueInput.length);
           });
+          break;
+
+        case "ctrl":
+          keyElement.innerHTML = 'Ctrl';
+          break;
+
+        case "win":
+          keyElement.innerHTML = 'Win';
+          break;
+
+        case "alt":
+          keyElement.innerHTML = 'Alt';
           break;
 
         default:
