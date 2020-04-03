@@ -67,10 +67,16 @@ class Keyboard {
           keyElement.addEventListener('click', () => {
             this.elements.textarea.focus();
             event.preventDefault();
-
-            this.properties.valueInput = this.properties.valueInput.substring(0, this.elements.textarea.selectionStart - 1) + this.properties.valueInput.substring(this.elements.textarea.selectionStart, this.properties.valueInput.length);
-
-            this._oninput(key, this.elements.textarea.selectionStart - 1);
+            if (this.elements.textarea.selectionStart !== 0) {
+              if (this.elements.textarea.selectionEnd === this.elements.textarea.selectionStart) {
+                this.properties.valueInput = this.properties.valueInput.substring(0, this.elements.textarea.selectionStart - 1) + this.properties.valueInput.substring(this.elements.textarea.selectionStart, this.properties.valueInput.length);
+                this._oninput(key, this.elements.textarea.selectionStart - 1);
+              } else {
+                this.properties.valueInput = this.properties.valueInput.substring(0, this.elements.textarea.selectionStart) + this.properties.valueInput.substring(this.elements.textarea.selectionEnd, this.properties.valueInput.length);
+                this._oninput(key, this.elements.textarea.selectionStart);
+              }
+            } else
+              this._oninput(key, this.elements.textarea.selectionStart);
           });
           break;
 
@@ -81,7 +87,10 @@ class Keyboard {
           keyElement.addEventListener('click', () => {
             this.elements.textarea.focus();
             event.preventDefault();
+            if (this.elements.textarea.selectionEnd === this.elements.textarea.selectionStart) 
             this.properties.valueInput = this.properties.valueInput.substring(0, this.elements.textarea.selectionStart) + this.properties.valueInput.substring(this.elements.textarea.selectionStart + 1, this.properties.valueInput.length);
+            else
+            this.properties.valueInput = this.properties.valueInput.substring(0, this.elements.textarea.selectionStart) + this.properties.valueInput.substring(this.elements.textarea.selectionEnd, this.properties.valueInput.length);
             this._oninput(key, this.elements.textarea.selectionStart);
           });
           break;
