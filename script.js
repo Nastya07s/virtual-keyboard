@@ -21,7 +21,7 @@ class Keyboard {
       'Tab', 'KeyQ', 'KeyW', 'KeyE', 'KeyR', 'KeyT', 'KeyY', 'KeyU', 'KeyI', 'KeyO', 'KeyP', 'BracketLeft', 'BracketRight', 'Delete',
       'CapsLock', 'KeyA', 'KeyS', 'KeyD', 'KeyF', 'KeyG', 'KeyH', 'KeyJ', 'KeyK', 'KeyL', 'Semicolon', 'Quote', 'Enter',
       'ShiftLeft', 'KeyZ', 'KeyX', 'KeyC', 'KeyV', 'KeyB', 'KeyN', 'KeyM', 'Comma', 'Period', 'Slash', 'ArrowUp', 'ShiftRight',
-      'ControlLeft', 'MetaLeft', 'AltLeft', 'Space', 'ControlRight', 'Home', 'ArrowLeft', 'ArrowDown', 'ArrowRight', 'End',
+      'ControlLeft', 'MetaLeft', 'AltLeft', 'Space', 'AltRight','ControlRight', 'Home', 'ArrowLeft', 'ArrowDown', 'ArrowRight', 'End',
     ]
 
     this.pressed = new Set();
@@ -198,21 +198,22 @@ class Keyboard {
       'tab', 'й', 'ц', 'у', 'к', 'е', 'н', 'г', 'ш', 'щ', 'з', 'х', 'ъ', 'delete',
       'capslock', 'ф', 'ы', 'в', 'а', 'п', 'р', 'о', 'л', 'д', 'ж', 'э', 'enter',
       'shift', 'я', 'ч', 'с', 'м', 'и', 'т', 'ь', 'б', 'ю', '.', '↑', 'rshift',
-      'ctrl', 'win', 'alt', 'space', 'ctrl', 'home', '←', '↓', '→', 'end',
+      'ctrl', 'win', 'alt', 'space', 'alt','ctrl', 'home', '←', '↓', '→', 'end',
     ] : [
       '`', '1', '2', '3', '4', '5', '6', '7', '8', '9', '0', '-', '=', 'backspace',
       'tab', 'q', 'w', 'e', 'r', 't', 'y', 'u', 'i', 'o', 'p', '[', ']', 'delete',
       'capslock', 'a', 's', 'd', 'f', 'g', 'h', 'j', 'k', 'l', ';', '\'', 'enter',
       'shift', 'z', 'x', 'c', 'v', 'b', 'n', 'm', ',', '.', '/', '↑', 'rshift',
-      'ctrl', 'win', 'alt', 'space', 'ctrl', 'home', '←', '↓', '→', 'end',
+      'ctrl', 'win', 'alt', 'space', 'alt','ctrl', 'home', '←', '↓', '→', 'end',
     ];
 
-    keysLayout.forEach(key => {
+    keysLayout.forEach((key,i) => {
       const keyElement = document.createElement('button');
 
       keyElement.classList.add('keyboard-key');
       keyElement.setAttribute('type', 'button');
-      keyElement.dataset.code = this.codes[keysLayout.indexOf(key)];
+
+      keyElement.dataset.code = this.codes[keysLayout.indexOf(key,i)];
 
       const lineBreak = ['backspace', 'delete', 'enter', 'rshift', 'end'].includes(key);
 
@@ -389,7 +390,7 @@ class Keyboard {
       setTimeout(() => {
         element.classList.toggle('keyboard-key-pressed', false);
       }, 100);
-    // console.log(element);
+    console.log(element);
     // console.log(option);
   }
 }
