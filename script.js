@@ -131,23 +131,25 @@ class Keyboard {
 
 
         default:
-          this.elements.textarea.focus();
-          event.preventDefault();
-          let keySymbol = this.properties.capsLock ? key.toUpperCase() : key.toLowerCase();
-          this.properties.valueInput = this.properties.valueInput.substring(0, this.elements.textarea.selectionStart) + keySymbol + this.properties.valueInput.substring(this.elements.textarea.selectionStart, this.properties.valueInput.length);
-          this._oninput(key, ++this.elements.textarea.selectionStart);
+          if (key.length === 1) {
+            this.elements.textarea.focus();
+            event.preventDefault();
+            let keySymbol = this.properties.capsLock ? key.toUpperCase() : key.toLowerCase();
+            this.properties.valueInput = this.properties.valueInput.substring(0, this.elements.textarea.selectionStart) + keySymbol + this.properties.valueInput.substring(this.elements.textarea.selectionStart, this.properties.valueInput.length);
+            this._oninput(key, ++this.elements.textarea.selectionStart);
+          }
 
           break;
       }
     });
 
-    window.addEventListener('keyup', event => {
-      console.log(event);
-      if (event.key !== 'CapsLock')
-        Array.from(this.elements.keys)
-        .filter(el => el.textContent === event.key || el.textContent.length === 0 && event.key === ' ' || el.textContent === 'Ctrl' && event.key === 'Control' || el.textContent === 'Win' && event.key === 'Meta')
-        .forEach(el => this._togglePress(el, false));
-    })
+    // window.addEventListener('keyup', event => {
+    //   console.log(event);
+    //   if (event.key !== 'CapsLock')
+    //     Array.from(this.elements.keys)
+    //     .filter(el => el.textContent === event.key || el.textContent.length === 0 && event.key === ' ' || el.textContent === 'Ctrl' && event.key === 'Control' || el.textContent === 'Win' && event.key === 'Meta')
+    //     .forEach(el => this._togglePress(el, false));
+    // })
   }
 
   _createKeys() {
@@ -343,6 +345,9 @@ class Keyboard {
   _togglePress(element, option) {
 
     element.classList.toggle('keyboard-key-pressed', option);
+    setTimeout(() => {
+      element.classList.toggle('keyboard-key-pressed', false);
+    }, 100);
     console.log(element);
   }
 }
