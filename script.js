@@ -1,6 +1,6 @@
 class Keyboard {
 
-  constructor(lang) {
+  constructor() {
 
     this.elements = {
       main: null,
@@ -15,6 +15,14 @@ class Keyboard {
       capsLock: false,
       language: localStorage.getItem('lang'),
     };
+
+    this.codes = [
+      'Backquote', 'Digit1', 'Digit2', 'Digit3', 'Digit4', 'Digit5', 'Digit6', 'Digit7', 'Digit8', 'Digit9', 'Digit0', 'Minus', 'Equal', 'Backspace',
+      'Tab', 'KeyQ', 'KeyW', 'KeyE', 'KeyR', 'KeyT', 'KeyY', 'KeyU', 'KeyI', 'KeyO', 'KeyP', 'BracketLeft', 'BracketRight', 'Delete',
+      'CapsLock', 'KeyA', 'KeyS', 'KeyD', 'KeyF', 'KeyG', 'KeyH', 'KeyJ', 'KeyK', 'KeyL', 'Semicolon', 'Quote', 'Enter',
+      'ShiftLeft', 'KeyZ', 'KeyX', 'KeyC', 'KeyV', 'KeyB', 'KeyN', 'KeyM', 'Comma', 'Period', 'Slash', 'ArrowUp', 'ShiftRight',
+      'ControlLeft', 'MetaLeft', 'AltLeft', 'Space', 'ControlRight', 'Home', 'ArrowLeft', 'ArrowDown', 'ArrowRight', 'End',
+    ]
 
     this.pressed = new Set();
 
@@ -49,13 +57,13 @@ class Keyboard {
 
     window.addEventListener('keydown', event => {
       console.log(event);
-      let key = event.key;
+      let key = event.code;
       // event.preventDefault();
       // if (event.key !== 'CapsLock')
       console.log(key);
       // console.log(this.elements.keys);
       Array.from(this.elements.keys)
-        .filter(el => el.textContent === key || el.textContent.length === 0 && key === ' ' || el.textContent === 'Ctrl' && key === 'Control' || el.textContent === 'Win' && key === 'Meta')
+        .filter(el => el.dataset.code === key)
         .forEach(el => this._togglePress(el, true));
       switch (key) {
         case 'Backspace':
@@ -105,7 +113,7 @@ class Keyboard {
 
           break;
 
-        case " ":
+        case "Space":
           this.elements.textarea.focus();
           event.preventDefault();
           this.properties.valueInput = this.properties.valueInput.substring(0, this.elements.textarea.selectionStart) + ' ' + this.properties.valueInput.substring(this.elements.textarea.selectionStart, this.properties.valueInput.length);
@@ -113,9 +121,11 @@ class Keyboard {
 
           break;
 
-        case "Shift":
-          if (event.location === 1)
-            this.pressed.add(event.code);
+        case "ShiftLeft":
+          this.pressed.add(event.code);
+          break;
+
+        case "ShiftRight":
           break;
 
         case "Home":
@@ -130,24 +140,29 @@ class Keyboard {
           this._oninput(key, this.properties.valueInput.length);
           break;
 
-        case "Control":
+        case "ControlLeft":
+        case "ControRight":
           break;
 
-        case "Meta":
+        case key.includes('Meta'):
           break;
 
-        case "Alt":
+        case "AltRight":
           event.preventDefault();
-          if (event.location === 1)
-            this.pressed.add(event.code);
+          break;
+
+        case "AltLeft":
+          event.preventDefault();
+          this.pressed.add(event.code);
           break;
 
 
         default:
-          if (key.length === 1) {
+          if (key.includes('Key')) {
             this.elements.textarea.focus();
             event.preventDefault();
-            let keySymbol = this.properties.capsLock ? key.toUpperCase() : key.toLowerCase();
+            console.log(this.elements.keys[this.codes.indexOf(key)].textContent);
+            let keySymbol = this.properties.capsLock ? this.elements.keys[this.codes.indexOf(key)].textContent.toUpperCase() : this.elements.keys[this.codes.indexOf(key)].textContent.toLowerCase();
             this.properties.valueInput = this.properties.valueInput.substring(0, this.elements.textarea.selectionStart) + keySymbol + this.properties.valueInput.substring(this.elements.textarea.selectionStart, this.properties.valueInput.length);
             this._oninput(key, ++this.elements.textarea.selectionStart);
           }
@@ -161,7 +176,7 @@ class Keyboard {
       console.log(event);
       if (event.key !== 'CapsLock')
         Array.from(this.elements.keys)
-        .filter(el => el.textContent === event.key || el.textContent.length === 0 && event.key === ' ' || el.textContent === 'Ctrl' && event.key === 'Control' || el.textContent === 'Win' && event.key === 'Meta')
+        .filter(el => el.dataset.code === event.code)
         .forEach(el => this._togglePress(el, false));
       if (this.pressed.size === 2) {
         this.properties.language = this.properties.language === 'ru' ? 'en' : 'ru';
@@ -177,7 +192,7 @@ class Keyboard {
 
   _createKeys() {
     const fragment = document.createDocumentFragment();
-    
+
     let keysLayout = this.properties.language === 'ru' ? [
       'ё', '1', '2', '3', '4', '5', '6', '7', '8', '9', '0', '-', '=', 'backspace',
       'tab', 'й', 'ц', 'у', 'к', 'е', 'н', 'г', 'ш', 'щ', 'з', 'х', 'ъ', 'delete',
@@ -197,6 +212,7 @@ class Keyboard {
 
       keyElement.classList.add('keyboard-key');
       keyElement.setAttribute('type', 'button');
+      keyElement.dataset.code = this.codes[keysLayout.indexOf(key)];
 
       const lineBreak = ['backspace', 'delete', 'enter', 'rshift', 'end'].includes(key);
 
@@ -374,10 +390,10 @@ class Keyboard {
         element.classList.toggle('keyboard-key-pressed', false);
       }, 100);
     // console.log(element);
+    // console.log(option);
   }
 }
 
 window.addEventListener('DOMContentLoaded', () => {
-  const lang = localStorage.getItem('lang');
-  const keyboard = new Keyboard(lang);
+  const keyboard = new Keyboard();
 })
