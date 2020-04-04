@@ -1,6 +1,6 @@
 class Keyboard {
 
-  constructor() {
+  constructor(lang) {
 
     this.elements = {
       main: null,
@@ -13,13 +13,21 @@ class Keyboard {
     this.properties = {
       valueInput: '',
       capsLock: false,
-      language: 'ru',
+      language: localStorage.getItem('lang'),
     };
+
+    this.pressed = new Set();
 
     this.init();
   }
 
   init() {
+    if (this.elements.main !== null) {
+      // this.elements.main.remove();
+      // // this.elements.textarea.remove();
+      // this.elements.keyboard.remove();
+      // this.elements.keysCountainer.remove();
+    }
     this.elements.main = document.createElement('div');
     this.elements.textarea = document.createElement('textarea');
     this.elements.keyboard = document.createElement('div');
@@ -42,9 +50,10 @@ class Keyboard {
     window.addEventListener('keydown', event => {
       console.log(event);
       let key = event.key;
+      // event.preventDefault();
       // if (event.key !== 'CapsLock')
       console.log(key);
-      console.log(this.elements.keys);
+      // console.log(this.elements.keys);
       Array.from(this.elements.keys)
         .filter(el => el.textContent === key || el.textContent.length === 0 && key === ' ' || el.textContent === 'Ctrl' && key === 'Control' || el.textContent === 'Win' && key === 'Meta')
         .forEach(el => this._togglePress(el, true));
@@ -105,6 +114,8 @@ class Keyboard {
           break;
 
         case "Shift":
+          if (event.location === 1)
+            this.pressed.add(event.code);
           break;
 
         case "Home":
@@ -123,10 +134,12 @@ class Keyboard {
           break;
 
         case "Meta":
-          // event.preventDefault();
           break;
 
         case "Alt":
+          event.preventDefault();
+          if (event.location === 1)
+            this.pressed.add(event.code);
           break;
 
 
@@ -141,20 +154,31 @@ class Keyboard {
 
           break;
       }
+      console.log(this.pressed);
     });
 
-    // window.addEventListener('keyup', event => {
-    //   console.log(event);
-    //   if (event.key !== 'CapsLock')
-    //     Array.from(this.elements.keys)
-    //     .filter(el => el.textContent === event.key || el.textContent.length === 0 && event.key === ' ' || el.textContent === 'Ctrl' && event.key === 'Control' || el.textContent === 'Win' && event.key === 'Meta')
-    //     .forEach(el => this._togglePress(el, false));
-    // })
+    window.addEventListener('keyup', event => {
+      console.log(event);
+      if (event.key !== 'CapsLock')
+        Array.from(this.elements.keys)
+        .filter(el => el.textContent === event.key || el.textContent.length === 0 && event.key === ' ' || el.textContent === 'Ctrl' && event.key === 'Control' || el.textContent === 'Win' && event.key === 'Meta')
+        .forEach(el => this._togglePress(el, false));
+      if (this.pressed.size === 2) {
+        this.properties.language = this.properties.language === 'ru' ? 'en' : 'ru';
+        localStorage.setItem('lang', this.properties.language);
+        [...this.elements.keysCountainer.children].forEach(el => el.remove());
+        this.elements.keysCountainer.appendChild(this._createKeys());
+        this.elements.keys = this.elements.keysCountainer.querySelectorAll('.keyboard-key');
+      }
+      this.pressed.delete(event.code)
+
+    })
   }
 
   _createKeys() {
     const fragment = document.createDocumentFragment();
-    const keysLayout = this.properties.language === 'ru' ? [
+    
+    let keysLayout = this.properties.language === 'ru' ? [
       'ё', '1', '2', '3', '4', '5', '6', '7', '8', '9', '0', '-', '=', 'backspace',
       'tab', 'й', 'ц', 'у', 'к', 'е', 'н', 'г', 'ш', 'щ', 'з', 'х', 'ъ', 'delete',
       'capslock', 'ф', 'ы', 'в', 'а', 'п', 'р', 'о', 'л', 'д', 'ж', 'э', 'enter',
@@ -345,13 +369,15 @@ class Keyboard {
   _togglePress(element, option) {
 
     element.classList.toggle('keyboard-key-pressed', option);
-    setTimeout(() => {
-      element.classList.toggle('keyboard-key-pressed', false);
-    }, 100);
-    console.log(element);
+    if (element.textContent === 'Win')
+      setTimeout(() => {
+        element.classList.toggle('keyboard-key-pressed', false);
+      }, 100);
+    // console.log(element);
   }
 }
 
 window.addEventListener('DOMContentLoaded', () => {
-  const keyboard = new Keyboard();
+  const lang = localStorage.getItem('lang');
+  const keyboard = new Keyboard(lang);
 })
