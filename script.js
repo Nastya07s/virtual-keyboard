@@ -61,6 +61,10 @@ class Keyboard {
 
     document.body.appendChild(this.elements.main);
 
+    document.addEventListener('mouseup', () => {
+      [...this.elements.keys].map(el => el.textContent === 'CapsLock' ? this.properties.capsLock ? el.classList.add('keyboard-key-pressed') : el.classList.remove('keyboard-key-pressed') :el.classList.remove('keyboard-key-pressed'));
+    });
+
     window.addEventListener('keydown', event => {
       console.log(event);
       let key = event.code;
@@ -144,7 +148,8 @@ class Keyboard {
           if (this.firstRowShift[0] === 'ё' && this.properties.language === 'en') {
             this.firstRowShift.shift();
             this.firstRowShift.unshift('~');
-          } else if (this.firstRowShift[0] === '~' && this.properties.language === 'ru'){            this.firstRowShift.shift();
+          } else if (this.firstRowShift[0] === '~' && this.properties.language === 'ru') {
+            this.firstRowShift.shift();
             this.firstRowShift.unshift('ё');
           }
           for (let i = 0; i < 13; i++) {
@@ -166,6 +171,41 @@ class Keyboard {
           break;
 
         case "ShiftRight":
+          this.properties.shift = true;
+
+          if (this.properties.language === 'en') {
+            this.elements.keys[this.codes.indexOf('BracketLeft')].textContent = '{';
+            this.elements.keys[this.codes.indexOf('BracketRight')].textContent = '}';
+            this.elements.keys[this.codes.indexOf('Semicolon')].textContent = ':';
+            this.elements.keys[this.codes.indexOf('Quote')].textContent = '"';
+            this.elements.keys[this.codes.indexOf('Comma')].textContent = '<';
+            this.elements.keys[this.codes.indexOf('Period')].textContent = '>';
+            this.elements.keys[this.codes.indexOf('Slash')].textContent = '?';
+          } else
+            this.elements.keys[this.codes.indexOf('Slash')].textContent = ',';
+          if (this.firstRowShift[0] === 'ё' && this.properties.language === 'en') {
+            this.firstRowShift.shift();
+            this.firstRowShift.unshift('~');
+          } else if (this.firstRowShift[0] === '~' && this.properties.language === 'ru') {
+            this.firstRowShift.shift();
+            this.firstRowShift.unshift('ё');
+          }
+          for (let i = 0; i < 13; i++) {
+            this.elements.keys[i].textContent = this.firstRowShift[i];
+          };
+          for (const key of this.elements.keys) {
+
+            if (key.textContent.length === 1)
+              if (this._isUpper(key.textContent))
+                key.textContent = key.textContent.toLowerCase();
+              else
+                key.textContent = key.textContent.toUpperCase();
+          };
+
+          if (this.properties.capsLock)
+            this.elements.keys[0].textContent = this.elements.keys[0].textContent.toLowerCase();
+          else
+            this.elements.keys[0].textContent = this.elements.keys[0].textContent.toUpperCase();
           break;
 
         case "Home":
@@ -236,9 +276,9 @@ class Keyboard {
           this.elements.keys[this.codes.indexOf('Slash')].textContent = '/';
         } else
           this.elements.keys[this.codes.indexOf('Slash')].textContent = '.';
-        
+
         if (this.firstRow[0] === 'ё' && this.properties.language === 'en') {
-          
+
           this.firstRow.shift();
           this.firstRow.unshift('`');
         } else if (this.firstRow[0] === '`' && this.properties.language === 'ru') {
@@ -311,9 +351,11 @@ class Keyboard {
           keyElement.classList.add('keyboard-key-wide');
           keyElement.innerHTML = 'Backspace';
 
-          keyElement.addEventListener('click', () => {
+          keyElement.addEventListener('mousedown', () => {
             this.elements.textarea.focus();
             event.preventDefault();
+            keyElement.classList.add('keyboard-key-pressed');
+
             if (this.elements.textarea.selectionStart !== 0) {
               if (this.elements.textarea.selectionEnd === this.elements.textarea.selectionStart) {
                 this.properties.valueInput = this.properties.valueInput.substring(0, this.elements.textarea.selectionStart - 1) + this.properties.valueInput.substring(this.elements.textarea.selectionStart, this.properties.valueInput.length);
@@ -331,9 +373,11 @@ class Keyboard {
           keyElement.classList.add('keyboard-key-wide');
           keyElement.innerHTML = 'Delete';
 
-          keyElement.addEventListener('click', () => {
+          keyElement.addEventListener('mousedown', () => {
             this.elements.textarea.focus();
             event.preventDefault();
+            keyElement.classList.add('keyboard-key-pressed');
+
             if (this.elements.textarea.selectionEnd === this.elements.textarea.selectionStart)
               this.properties.valueInput = this.properties.valueInput.substring(0, this.elements.textarea.selectionStart) + this.properties.valueInput.substring(this.elements.textarea.selectionStart + 1, this.properties.valueInput.length);
             else
@@ -346,9 +390,10 @@ class Keyboard {
           keyElement.classList.add('keyboard-key-wide');
           keyElement.innerHTML = 'Tab';
 
-          keyElement.addEventListener('click', () => {
+          keyElement.addEventListener('mousedown', () => {
             this.elements.textarea.focus();
             event.preventDefault();
+            keyElement.classList.add('keyboard-key-pressed');
             this.properties.valueInput = this.properties.valueInput.substring(0, this.elements.textarea.selectionStart) + '\t' + this.properties.valueInput.substring(this.elements.textarea.selectionStart, this.properties.valueInput.length);
             this._oninput(key, ++this.elements.textarea.selectionStart);
           });
@@ -358,7 +403,7 @@ class Keyboard {
           keyElement.classList.add('keyboard-key-wide');
           keyElement.innerHTML = 'CapsLock';
 
-          keyElement.addEventListener('click', () => {
+          keyElement.addEventListener('mousedown', () => {
             this._toggleCapsLock();
             keyElement.classList.toggle('keyboard-key-pressed', this.properties.capsLock);
           });
@@ -368,9 +413,10 @@ class Keyboard {
           keyElement.classList.add('keyboard-key-wide');
           keyElement.innerHTML = 'Enter';
 
-          keyElement.addEventListener('click', () => {
+          keyElement.addEventListener('mousedown', () => {
             this.elements.textarea.focus();
             event.preventDefault();
+            keyElement.classList.add('keyboard-key-pressed');
             this.properties.valueInput = this.properties.valueInput.substring(0, this.elements.textarea.selectionStart) + '\n' + this.properties.valueInput.substring(this.elements.textarea.selectionStart, this.properties.valueInput.length);
             this._oninput(key, ++this.elements.textarea.selectionStart);
           });
@@ -379,9 +425,10 @@ class Keyboard {
         case "space":
           keyElement.classList.add('keyboard-key-extra-wide');
 
-          keyElement.addEventListener('click', () => {
+          keyElement.addEventListener('mousedown', () => {
             this.elements.textarea.focus();
             event.preventDefault();
+            keyElement.classList.add('keyboard-key-pressed');
             this.properties.valueInput = this.properties.valueInput.substring(0, this.elements.textarea.selectionStart) + ' ' + this.properties.valueInput.substring(this.elements.textarea.selectionStart, this.properties.valueInput.length);
             this._oninput(key, ++this.elements.textarea.selectionStart);
           });
@@ -391,20 +438,29 @@ class Keyboard {
           keyElement.classList.add('keyboard-key-wide');
           keyElement.innerHTML = 'Shift';
 
+          keyElement.addEventListener('mousedown', () => {
+            keyElement.classList.add('keyboard-key-pressed');
+            });
+
           break;
 
         case "rshift":
           keyElement.classList.add('keyboard-key-wide');
           keyElement.innerHTML = 'Shift';
 
+          keyElement.addEventListener('mousedown', () => {
+            keyElement.classList.add('keyboard-key-pressed');
+            });
+
           break;
 
         case "home":
           keyElement.innerHTML = 'Home';
 
-          keyElement.addEventListener('click', () => {
+          keyElement.addEventListener('mousedown', () => {
             this.elements.textarea.focus();
             event.preventDefault();
+            keyElement.classList.add('keyboard-key-pressed');
             this._oninput(key, 0);
           });
           break;
@@ -412,31 +468,45 @@ class Keyboard {
         case "end":
           keyElement.innerHTML = 'End';
 
-          keyElement.addEventListener('click', () => {
+          keyElement.addEventListener('mousedown', () => {
             this.elements.textarea.focus();
             event.preventDefault();
+            keyElement.classList.add('keyboard-key-pressed');
             this._oninput(key, this.properties.valueInput.length);
           });
           break;
 
         case "ctrl":
           keyElement.innerHTML = 'Ctrl';
+
+          keyElement.addEventListener('mousedown', () => {
+            keyElement.classList.add('keyboard-key-pressed');
+          });
           break;
 
         case "win":
           keyElement.innerHTML = 'Win';
+
+          keyElement.addEventListener('mousedown', () => {
+            keyElement.classList.add('keyboard-key-pressed');
+          });
           break;
 
         case "alt":
           keyElement.innerHTML = 'Alt';
+
+          keyElement.addEventListener('mousedown', () => {
+            keyElement.classList.add('keyboard-key-pressed');
+          });
           break;
 
         default:
           keyElement.textContent = key.toLowerCase();
 
-          keyElement.addEventListener('click', () => {
+          keyElement.addEventListener('mousedown', () => {
             this.elements.textarea.focus();
             event.preventDefault();
+            keyElement.classList.add('keyboard-key-pressed');
             let keySymbol = this.properties.capsLock ? key.toUpperCase() : key.toLowerCase();
             this.properties.valueInput = this.properties.valueInput.substring(0, this.elements.textarea.selectionStart) + keySymbol + this.properties.valueInput.substring(this.elements.textarea.selectionStart, this.properties.valueInput.length);
             this._oninput(key, ++this.elements.textarea.selectionStart);
