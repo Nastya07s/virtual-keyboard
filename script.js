@@ -58,10 +58,10 @@ class Keyboard {
     this.elements.main.appendChild(this.elements.keyboard);
 
     document.body.appendChild(this.elements.main);
-    
+
 
     document.addEventListener('mouseup', () => {
-      [...this.elements.keys].map(el => el.textContent === 'CapsLock' ? this.properties.capsLock ? el.classList.add('keyboard-key-pressed') : el.classList.remove('keyboard-key-pressed') :el.classList.remove('keyboard-key-pressed'));
+      [...this.elements.keys].map(el => el.textContent === 'CapsLock' ? this.properties.capsLock ? el.classList.add('keyboard-key-pressed') : el.classList.remove('keyboard-key-pressed') : el.classList.remove('keyboard-key-pressed'));
     });
 
     window.addEventListener('keydown', event => {
@@ -131,80 +131,84 @@ class Keyboard {
           break;
 
         case "ShiftLeft":
-          this.pressed.add(event.code);
-          this.properties.shift = true;
+          if (!event.repeat) {
+            this.pressed.add(event.code);
+            this.properties.shift = true;
 
-          if (this.properties.language === 'en') {
-            this.elements.keys[this.codes.indexOf('BracketLeft')].textContent = '{';
-            this.elements.keys[this.codes.indexOf('BracketRight')].textContent = '}';
-            this.elements.keys[this.codes.indexOf('Semicolon')].textContent = ':';
-            this.elements.keys[this.codes.indexOf('Quote')].textContent = '"';
-            this.elements.keys[this.codes.indexOf('Comma')].textContent = '<';
-            this.elements.keys[this.codes.indexOf('Period')].textContent = '>';
-            this.elements.keys[this.codes.indexOf('Slash')].textContent = '?';
-          } else
-            this.elements.keys[this.codes.indexOf('Slash')].textContent = ',';
-          if (this.firstRowShift[0] === 'ё' && this.properties.language === 'en') {
-            this.firstRowShift.shift();
-            this.firstRowShift.unshift('~');
-          } else if (this.firstRowShift[0] === '~' && this.properties.language === 'ru') {
-            this.firstRowShift.shift();
-            this.firstRowShift.unshift('ё');
+            if (this.properties.language === 'en') {
+              this.elements.keys[this.codes.indexOf('BracketLeft')].textContent = '{';
+              this.elements.keys[this.codes.indexOf('BracketRight')].textContent = '}';
+              this.elements.keys[this.codes.indexOf('Semicolon')].textContent = ':';
+              this.elements.keys[this.codes.indexOf('Quote')].textContent = '"';
+              this.elements.keys[this.codes.indexOf('Comma')].textContent = '<';
+              this.elements.keys[this.codes.indexOf('Period')].textContent = '>';
+              this.elements.keys[this.codes.indexOf('Slash')].textContent = '?';
+            } else
+              this.elements.keys[this.codes.indexOf('Slash')].textContent = ',';
+            if (this.firstRowShift[0] === 'ё' && this.properties.language === 'en') {
+              this.firstRowShift.shift();
+              this.firstRowShift.unshift('~');
+            } else if (this.firstRowShift[0] === '~' && this.properties.language === 'ru') {
+              this.firstRowShift.shift();
+              this.firstRowShift.unshift('ё');
+            }
+            for (let i = 0; i < 13; i++) {
+              this.elements.keys[i].textContent = this.firstRowShift[i];
+            };
+            for (const key of this.elements.keys) {
+
+              if (key.textContent.length === 1)
+                if (this._isUpper(key.textContent))
+                  key.textContent = key.textContent.toLowerCase();
+                else
+                  key.textContent = key.textContent.toUpperCase();
+            };
+
+            if (this.properties.capsLock)
+              this.elements.keys[0].textContent = this.elements.keys[0].textContent.toLowerCase();
+            else
+              this.elements.keys[0].textContent = this.elements.keys[0].textContent.toUpperCase();
           }
-          for (let i = 0; i < 13; i++) {
-            this.elements.keys[i].textContent = this.firstRowShift[i];
-          };
-          for (const key of this.elements.keys) {
-
-            if (key.textContent.length === 1)
-              if (this._isUpper(key.textContent))
-                key.textContent = key.textContent.toLowerCase();
-              else
-                key.textContent = key.textContent.toUpperCase();
-          };
-
-          if (this.properties.capsLock)
-            this.elements.keys[0].textContent = this.elements.keys[0].textContent.toLowerCase();
-          else
-            this.elements.keys[0].textContent = this.elements.keys[0].textContent.toUpperCase();
           break;
 
         case "ShiftRight":
-          this.properties.shift = true;
+          if (!event.repeat) {
+            this.properties.shift = true;
 
-          if (this.properties.language === 'en') {
-            this.elements.keys[this.codes.indexOf('BracketLeft')].textContent = '{';
-            this.elements.keys[this.codes.indexOf('BracketRight')].textContent = '}';
-            this.elements.keys[this.codes.indexOf('Semicolon')].textContent = ':';
-            this.elements.keys[this.codes.indexOf('Quote')].textContent = '"';
-            this.elements.keys[this.codes.indexOf('Comma')].textContent = '<';
-            this.elements.keys[this.codes.indexOf('Period')].textContent = '>';
-            this.elements.keys[this.codes.indexOf('Slash')].textContent = '?';
-          } else
-            this.elements.keys[this.codes.indexOf('Slash')].textContent = ',';
-          if (this.firstRowShift[0] === 'ё' && this.properties.language === 'en') {
-            this.firstRowShift.shift();
-            this.firstRowShift.unshift('~');
-          } else if (this.firstRowShift[0] === '~' && this.properties.language === 'ru') {
-            this.firstRowShift.shift();
-            this.firstRowShift.unshift('ё');
+            if (this.properties.language === 'en') {
+              this.elements.keys[this.codes.indexOf('BracketLeft')].textContent = '{';
+              this.elements.keys[this.codes.indexOf('BracketRight')].textContent = '}';
+              this.elements.keys[this.codes.indexOf('Semicolon')].textContent = ':';
+              this.elements.keys[this.codes.indexOf('Quote')].textContent = '"';
+              this.elements.keys[this.codes.indexOf('Comma')].textContent = '<';
+              this.elements.keys[this.codes.indexOf('Period')].textContent = '>';
+              this.elements.keys[this.codes.indexOf('Slash')].textContent = '?';
+            } else
+              this.elements.keys[this.codes.indexOf('Slash')].textContent = ',';
+            if (this.firstRowShift[0] === 'ё' && this.properties.language === 'en') {
+              this.firstRowShift.shift();
+              this.firstRowShift.unshift('~');
+            } else if (this.firstRowShift[0] === '~' && this.properties.language === 'ru') {
+              this.firstRowShift.shift();
+              this.firstRowShift.unshift('ё');
+            }
+            for (let i = 0; i < 13; i++) {
+              this.elements.keys[i].textContent = this.firstRowShift[i];
+            };
+            for (const key of this.elements.keys) {
+
+              if (key.textContent.length === 1)
+                if (this._isUpper(key.textContent))
+                  key.textContent = key.textContent.toLowerCase();
+                else
+                  key.textContent = key.textContent.toUpperCase();
+            };
+
+            if (this.properties.capsLock)
+              this.elements.keys[0].textContent = this.elements.keys[0].textContent.toLowerCase();
+            else
+              this.elements.keys[0].textContent = this.elements.keys[0].textContent.toUpperCase();
           }
-          for (let i = 0; i < 13; i++) {
-            this.elements.keys[i].textContent = this.firstRowShift[i];
-          };
-          for (const key of this.elements.keys) {
-
-            if (key.textContent.length === 1)
-              if (this._isUpper(key.textContent))
-                key.textContent = key.textContent.toLowerCase();
-              else
-                key.textContent = key.textContent.toUpperCase();
-          };
-
-          if (this.properties.capsLock)
-            this.elements.keys[0].textContent = this.elements.keys[0].textContent.toLowerCase();
-          else
-            this.elements.keys[0].textContent = this.elements.keys[0].textContent.toUpperCase();
           break;
 
         case "Home":
@@ -439,7 +443,7 @@ class Keyboard {
 
           keyElement.addEventListener('mousedown', () => {
             keyElement.classList.add('keyboard-key-pressed');
-            });
+          });
 
           break;
 
@@ -449,7 +453,7 @@ class Keyboard {
 
           keyElement.addEventListener('mousedown', () => {
             keyElement.classList.add('keyboard-key-pressed');
-            });
+          });
 
           break;
 
