@@ -13,6 +13,7 @@ class Keyboard {
     this.properties = {
       valueInput: '',
       capsLock: false,
+      shift: false,
       language: localStorage.getItem('lang'),
     };
 
@@ -21,8 +22,13 @@ class Keyboard {
       'Tab', 'KeyQ', 'KeyW', 'KeyE', 'KeyR', 'KeyT', 'KeyY', 'KeyU', 'KeyI', 'KeyO', 'KeyP', 'BracketLeft', 'BracketRight', 'Delete',
       'CapsLock', 'KeyA', 'KeyS', 'KeyD', 'KeyF', 'KeyG', 'KeyH', 'KeyJ', 'KeyK', 'KeyL', 'Semicolon', 'Quote', 'Enter',
       'ShiftLeft', 'KeyZ', 'KeyX', 'KeyC', 'KeyV', 'KeyB', 'KeyN', 'KeyM', 'Comma', 'Period', 'Slash', 'ArrowUp', 'ShiftRight',
-      'ControlLeft', 'MetaLeft', 'AltLeft', 'Space', 'AltRight','ControlRight', 'Home', 'ArrowLeft', 'ArrowDown', 'ArrowRight', 'End',
-    ]
+      'ControlLeft', 'MetaLeft', 'AltLeft', 'Space', 'AltRight', 'ControlRight', 'Home', 'ArrowLeft', 'ArrowDown', 'ArrowRight', 'End',
+    ];
+
+    this.firstRowShift = ['~', '!', '@', '#', '$', '%', '^', '&', '*', '(', ')', '_', '+', ];
+    this.firstRow = ['ё', '1', '2', '3', '4', '5', '6', '7', '8', '9', '0', '-', '=', ];
+    this.codesToChange = ['BracketLeft', 'BracketRight', 'Semicolon', 'Quote', 'Comma', 'Period', 'Slash', ]
+    this.specificButtons = ['Tab', 'CapsLock', 'ShiftLeft', 'ControlLeft', 'MetaLeft', 'AltLeft', 'Space', 'AltRight', 'ControlRight', 'Home', 'End', 'ShiftRight', 'Enter', 'Delete', 'Backspace', ];
 
     this.pressed = new Set();
 
@@ -123,6 +129,40 @@ class Keyboard {
 
         case "ShiftLeft":
           this.pressed.add(event.code);
+          this.properties.shift = true;
+
+          if (this.properties.language === 'en') {
+            this.elements.keys[this.codes.indexOf('BracketLeft')].textContent = '{';
+            this.elements.keys[this.codes.indexOf('BracketRight')].textContent = '}';
+            this.elements.keys[this.codes.indexOf('Semicolon')].textContent = ':';
+            this.elements.keys[this.codes.indexOf('Quote')].textContent = '"';
+            this.elements.keys[this.codes.indexOf('Comma')].textContent = '<';
+            this.elements.keys[this.codes.indexOf('Period')].textContent = '>';
+            this.elements.keys[this.codes.indexOf('Slash')].textContent = '?';
+          } else
+            this.elements.keys[this.codes.indexOf('Slash')].textContent = ',';
+          if (this.firstRowShift[0] === 'ё' && this.properties.language === 'en') {
+            this.firstRowShift.shift();
+            this.firstRowShift.unshift('~');
+          } else if (this.firstRowShift[0] === '~' && this.properties.language === 'ru'){            this.firstRowShift.shift();
+            this.firstRowShift.unshift('ё');
+          }
+          for (let i = 0; i < 13; i++) {
+            this.elements.keys[i].textContent = this.firstRowShift[i];
+          };
+          for (const key of this.elements.keys) {
+
+            if (key.textContent.length === 1)
+              if (this._isUpper(key.textContent))
+                key.textContent = key.textContent.toLowerCase();
+              else
+                key.textContent = key.textContent.toUpperCase();
+          };
+
+          if (this.properties.capsLock)
+            this.elements.keys[0].textContent = this.elements.keys[0].textContent.toLowerCase();
+          else
+            this.elements.keys[0].textContent = this.elements.keys[0].textContent.toUpperCase();
           break;
 
         case "ShiftRight":
@@ -158,22 +198,71 @@ class Keyboard {
 
 
         default:
-          if (key.includes('Key')) {
+          if (!this.specificButtons.includes(key)) {
+            console.log(key);
             this.elements.textarea.focus();
             event.preventDefault();
             console.log(this.elements.keys[this.codes.indexOf(key)].textContent);
-            let keySymbol = this.properties.capsLock ? this.elements.keys[this.codes.indexOf(key)].textContent.toUpperCase() : this.elements.keys[this.codes.indexOf(key)].textContent.toLowerCase();
+            let keySymbol;
+            if (this.properties.capsLock && this.properties.shift)
+              keySymbol = this.elements.keys[this.codes.indexOf(key)].textContent.toLowerCase();
+            else
+            if (this._isUpper(this.elements.keys[this.codes.indexOf(key)].textContent) && this.properties.shift)
+              keySymbol = !this.properties.capsLock ? this.elements.keys[this.codes.indexOf(key)].textContent.toUpperCase() : this.elements.keys[this.codes.indexOf(key)].textContent.toLowerCase();
+            else {
+              console.log(this.properties.capsLock);
+              keySymbol = this.properties.capsLock ? this.elements.keys[this.codes.indexOf(key)].textContent.toUpperCase() : this.elements.keys[this.codes.indexOf(key)].textContent.toLowerCase();
+            }
             this.properties.valueInput = this.properties.valueInput.substring(0, this.elements.textarea.selectionStart) + keySymbol + this.properties.valueInput.substring(this.elements.textarea.selectionStart, this.properties.valueInput.length);
             this._oninput(key, ++this.elements.textarea.selectionStart);
           }
 
           break;
       }
-      console.log(this.pressed);
+      // console.log(this.pressed);
     });
 
     window.addEventListener('keyup', event => {
       console.log(event);
+      if (event.key === 'Shift') {
+        this.properties.shift = false;
+        if (this.properties.language === 'en') {
+          this.elements.keys[this.codes.indexOf('BracketLeft')].textContent = '[';
+          this.elements.keys[this.codes.indexOf('BracketRight')].textContent = ']';
+          this.elements.keys[this.codes.indexOf('Semicolon')].textContent = ';';
+          this.elements.keys[this.codes.indexOf('Quote')].textContent = '\'';
+          this.elements.keys[this.codes.indexOf('Comma')].textContent = ',';
+          this.elements.keys[this.codes.indexOf('Period')].textContent = '.';
+          this.elements.keys[this.codes.indexOf('Slash')].textContent = '/';
+        } else
+          this.elements.keys[this.codes.indexOf('Slash')].textContent = '.';
+        
+        if (this.firstRow[0] === 'ё' && this.properties.language === 'en') {
+          
+          this.firstRow.shift();
+          this.firstRow.unshift('`');
+        } else if (this.firstRow[0] === '`' && this.properties.language === 'ru') {
+
+          this.firstRow.shift();
+          this.firstRow.unshift('Ё');
+        }
+        for (let i = 0; i < 13; i++) {
+          this.elements.keys[i].textContent = this.firstRow[i];
+        }
+        for (const key of this.elements.keys) {
+          if (key.textContent.length === 1)
+            if (this._isUpper(key.textContent)) {
+              key.textContent = key.textContent.toLowerCase();
+            }
+          else
+            key.textContent = key.textContent.toUpperCase();
+        }
+        if (this.properties.capsLock)
+          this.elements.keys[0].textContent = this.elements.keys[0].textContent.toUpperCase();
+        else
+          this.elements.keys[0].textContent = this.elements.keys[0].textContent.toLowerCase();
+
+      }
       if (event.key !== 'CapsLock')
         Array.from(this.elements.keys)
         .filter(el => el.dataset.code === event.code)
@@ -198,22 +287,22 @@ class Keyboard {
       'tab', 'й', 'ц', 'у', 'к', 'е', 'н', 'г', 'ш', 'щ', 'з', 'х', 'ъ', 'delete',
       'capslock', 'ф', 'ы', 'в', 'а', 'п', 'р', 'о', 'л', 'д', 'ж', 'э', 'enter',
       'shift', 'я', 'ч', 'с', 'м', 'и', 'т', 'ь', 'б', 'ю', '.', '↑', 'rshift',
-      'ctrl', 'win', 'alt', 'space', 'alt','ctrl', 'home', '←', '↓', '→', 'end',
+      'ctrl', 'win', 'alt', 'space', 'alt', 'ctrl', 'home', '←', '↓', '→', 'end',
     ] : [
       '`', '1', '2', '3', '4', '5', '6', '7', '8', '9', '0', '-', '=', 'backspace',
       'tab', 'q', 'w', 'e', 'r', 't', 'y', 'u', 'i', 'o', 'p', '[', ']', 'delete',
       'capslock', 'a', 's', 'd', 'f', 'g', 'h', 'j', 'k', 'l', ';', '\'', 'enter',
       'shift', 'z', 'x', 'c', 'v', 'b', 'n', 'm', ',', '.', '/', '↑', 'rshift',
-      'ctrl', 'win', 'alt', 'space', 'alt','ctrl', 'home', '←', '↓', '→', 'end',
+      'ctrl', 'win', 'alt', 'space', 'alt', 'ctrl', 'home', '←', '↓', '→', 'end',
     ];
 
-    keysLayout.forEach((key,i) => {
+    keysLayout.forEach((key, i) => {
       const keyElement = document.createElement('button');
 
       keyElement.classList.add('keyboard-key');
       keyElement.setAttribute('type', 'button');
 
-      keyElement.dataset.code = this.codes[keysLayout.indexOf(key,i)];
+      keyElement.dataset.code = this.codes[keysLayout.indexOf(key, i)];
 
       const lineBreak = ['backspace', 'delete', 'enter', 'rshift', 'end'].includes(key);
 
@@ -390,8 +479,13 @@ class Keyboard {
       setTimeout(() => {
         element.classList.toggle('keyboard-key-pressed', false);
       }, 100);
-    console.log(element);
+    // console.log(element);
     // console.log(option);
+  }
+
+  _isUpper(str) {
+    if (str === str.toUpperCase()) return true;
+    else return false;
   }
 }
 
