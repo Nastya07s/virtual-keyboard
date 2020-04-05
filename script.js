@@ -36,6 +36,10 @@ class Keyboard {
   }
 
   init() {
+    document.body.innerHTML = `<div class="note">
+                                <p>Made on Windows</p>
+                                <p>Changing the language to LeftShift and LeftAlt keys</p>
+                              </div>`;
     this.elements.main = document.createElement('div');
     this.elements.textarea = document.createElement('textarea');
     this.elements.keyboard = document.createElement('div');
@@ -54,10 +58,7 @@ class Keyboard {
     this.elements.main.appendChild(this.elements.keyboard);
 
     document.body.appendChild(this.elements.main);
-    document.body.innerHTML += `<div class="note">
-                                <p>Made on Windows</p>
-                                <p>Changing the language to LeftShift and LeftAlt keys</p>
-                              </div>`;
+    
 
     document.addEventListener('mouseup', () => {
       [...this.elements.keys].map(el => el.textContent === 'CapsLock' ? this.properties.capsLock ? el.classList.add('keyboard-key-pressed') : el.classList.remove('keyboard-key-pressed') :el.classList.remove('keyboard-key-pressed'));
