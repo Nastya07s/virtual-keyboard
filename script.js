@@ -552,6 +552,9 @@ window.addEventListener('DOMContentLoaded', () => {
       [...keyboard.elements.keysCountainer.children].forEach((el) => el.remove());
       keyboard.elements.keysCountainer.appendChild(keyboard.createKeys());
       keyboard.elements.keys = keyboard.elements.keysCountainer.querySelectorAll('.keyboard-key');
+      if (keyboard.properties.capsLock) {
+        keyboard.properties.capsLock = false;
+      }
       keysArray = keyboard.elements.keys;
     }
     keyboard.pressed.delete(event.code);
